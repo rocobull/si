@@ -1,0 +1,226 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Sep 26 09:43:10 2022
+
+@author: rober
+"""
+#In the Spyder console:
+#!pip install numpy pandas scipy matplotlib
+
+import numpy as np
+import pandas as pd
+from typing import Union
+
+
+class Dataset:
+    
+    def __init__(self, X:np.ndarray, y:np.ndarray=None, features:bool=None, label:bool=None):
+        """
+        Stores the input values.
+        
+        Paramaters
+        ----------
+        :param X: An independent variable matrix (should be a numpy.ndarray instance).
+        :param X: The dependent variable vector (should be a numpy.ndarray instance).
+        :param features: a vector constaining the names of each independent variable.
+        :param label: The name of the dependent variable.
+        """
+        self.X = X
+        self.y = y
+        self.features = features
+        self.label = label
+    
+    
+    def __str__(self):
+        result = "X:\n--\n"
+        for elem in self.X:
+            result += str(elem)[1:-1].replace(" ","\t") + "\n"
+        
+        if not (self.y is None):
+            result += "\ny:\n--\n" + str(self.y)[1:-1].replace(" ","\t")
+        
+        return result
+    
+    #def __iter__(self):
+    #    return pd.DataFrame(self)
+    
+    #def __getitem__(self, i):
+    #    return self.X[i]
+    
+    
+    def shape(self) -> tuple:
+        """
+        Returns the dimensions of both the independent and dependent variables.
+        """
+        return self.X.shape, self.y.shape
+    
+        
+    def has_label(self) -> bool:
+        """
+        Checks to see if the dependent variable is available.
+        """
+        if self.y is None:
+            return False
+        else:
+            return True
+    
+    
+    
+    def get_classes(self) -> Union[np.ndarray,None]:
+        """
+        Returns the unique values of the dependent variable.
+        """
+        if self.y is None:
+            return None
+        return np.unique(self.y, axis=0)
+    
+    
+    
+    def get_mean(self) -> np.ndarray:
+        """
+        Returns the mean value of each observation.
+        """
+        return np.mean(self.X, axis=0)
+    
+    
+    
+    def get_var(self) -> np.ndarray:
+        """
+        Returns the variance of each observation.
+        """
+        return np.var(self.X, axis=0)
+    
+    
+    
+    def get_median(self) -> np.ndarray:
+        """
+        Returns the median of each observation.
+        """
+        return np.median(self.X, axis=0)
+    
+    
+    
+    def get_min(self) -> np.ndarray:
+        """
+        Returns the minimum value of each observation.
+        """
+        return np.min(self.X, axis=0)
+
+
+
+    def get_max(self) -> np.ndarray:
+        """
+        Returns the maximum value of each observation.
+        """
+        return np.max(self.X, axis=0)
+
+
+
+    def summary(self) -> pd.DataFrame:
+        """
+        Returns a dataframe containing the mean, median, variance,
+        minimum and maximum value of each observation.
+        """
+        return pd.DataFrame(
+            {"mean": self.get_mean(),
+            "median": self.get_median(),
+            "var": self.get_var(),
+            "min": self.get_min(),
+            "max": self.get_max()}
+        )
+    
+    def remove_nan(self, copy:bool=True):
+        """
+        Removes all rows containing missing values in either the dependent or
+        independent variables.
+        
+        Paramaters
+        ----------
+        :param copy: Boolean indicating whether the changes should be made
+                     in a copy of the original data (True) or be done in-place
+                     (False).
+        """
+        #NaN
+        #---
+        cond = ~np.isnan(self.X).any(axis=1)
+        if not (self.y is None):
+            cond2 = ~np.isnan(self.y)
+            cond = ~np.isnan([cond,cond2]).any(axis=0)
+        self.X = self.X[cond,:]
+        self.y = self.y[cond]
+        
+        #None
+        #----
+#       print(self.X)
+#       cond = (self.X==None).any(axis=1)
+#       if not (self.y is None):
+#           cond2 = self.y==None
+#           cond = np.any([cond,cond2], axis=0)
+#           print(cond)
+#       new_X = np.delete(self.X, (self.X==None).any(axis=1), axis=0)
+#       new_y = np.delete(self.y, (self.X==None).any(axis=1), axis=0)
+#       if copy:
+#           return new_X, new_y
+#       else:
+#           self.X = new_X
+#           self.y = new_y
+        
+        
+    
+    
+    def fill_nan(self, value = 0, copy:bool = True) -> Union[tuple,None]:
+        """
+        Replaces missing values with the value of the user's choice.
+        
+        Paramaters
+        ----------
+        :param value: The value used to replace the missing values
+        :param copy: Boolean indicating whether the changes should be made
+                     in a copy of the original data (True) or be done in-place
+                     (False).
+        """
+        new_X = np.nan_to_num(self.X, copy, value)
+        new_y = np.nan_to_num(self.y, copy, value)
+        if copy:
+            return new_X, new_y
+    
+    
+    
+
+if __name__ == "__main__":
+    X = np.array([[1,2,3,4],
+                  [5,6,7,8],
+                  [9,10,11,12],
+                  [9,10,11,12]]) #4r, 4c
+    
+    y = np.array([10,
+                  20,
+                  30,
+                  10]) #4r, 1c
+    
+    temp = Dataset(X,y)
+    print(temp.shape())
+    print(temp.has_label())
+    print(temp.get_classes())
+    print(temp.summary())
+    
+    
+    #With NAs
+    #X = np.array([[1,2,3,4],
+    #              [5,6,7,8],
+    #              [9,10,11,12],
+    #              [9,10,11,12]]) #4r, 4c
+    
+    #y = np.array([10,
+    #              20,
+    #              30,
+    #              10]) #4r, 1c
+    #temp = Dataset(X,y)
+    #print(temp.remove_nan())
+    #print(temp.fill_nan(1000))
+    #print(temp.shape())
+    
+    
+    
+    
+    
