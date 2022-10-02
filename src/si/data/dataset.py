@@ -4,17 +4,21 @@ Created on Mon Sep 26 09:43:10 2022
 
 @author: rober
 """
-#In the Spyder console:
 #!pip install numpy pandas scipy matplotlib
+
+import sys
+sys.path.append("C:/Users/rober/si/src/si/io")
 
 import numpy as np
 import pandas as pd
 from typing import Union
+import CSV
+#from data_file import read_data_file
 
 
 class Dataset:
     
-    def __init__(self, X:np.ndarray, y:np.ndarray=None, features:bool=None, label:bool=None):
+    def __init__(self, X:np.ndarray, y:np.ndarray=None, features:Union[None,list]=None, label:bool=None):
         """
         Stores the input values.
         
@@ -22,7 +26,7 @@ class Dataset:
         ----------
         :param X: An independent variable matrix (should be a numpy.ndarray instance).
         :param X: The dependent variable vector (should be a numpy.ndarray instance).
-        :param features: a vector constaining the names of each independent variable.
+        :param features: A vector constaining the names of each independent variable.
         :param label: The name of the dependent variable.
         """
         self.X = X
@@ -129,6 +133,29 @@ class Dataset:
             "max": self.get_max()}
         )
     
+    
+    
+    def _find_nan(self, indiv:bool=True):
+        """
+        Returns a list of boolean values relative to the positions of missing values.
+        
+        Paramaters
+        ----------
+        :param indiv: Boolean indicating if the list should contain boolean values
+                      for each individual position ('True' if missing value was found),
+                      or for each line ('True' if the line does not contain missing values).
+        """
+        df = pd.DataFrame(self.X)
+        if not (self.y is None):
+            df_y = pd.DataFrame(self.y)
+            df = pd.concat([df, df_y], axis=1)
+        if indiv:
+            return pd.isnull(df)
+        else:
+            return ~pd.isnull(df).any(axis=1)
+        
+        
+    
     def remove_nan(self, copy:bool=True):
         """
         Removes all rows containing missing values in either the dependent or
@@ -141,13 +168,28 @@ class Dataset:
                      (False).
         """
         #NaN
-        #---
-        cond = ~np.isnan(self.X).any(axis=1)
+        #---      
+        cond = self._find_nan(False)
+        new_X = self.X[cond,:]
+        
         if not (self.y is None):
-            cond2 = ~np.isnan(self.y)
-            cond = ~np.isnan([cond,cond2]).any(axis=0)
-        self.X = self.X[cond,:]
-        self.y = self.y[cond]
+            new_y = self.y[cond]
+            if copy:
+                return new_X, new_y
+            else:
+                self.X = new_X
+                self.y = new_y
+        else:
+            if copy:
+                return new_X
+            else:
+                self.X = new_X
+            
+            #cond2 = ~pd.isnull(self.y)
+            #cond = ~pd.isnull([cond,cond2]).any(axis=0)
+
+        #self.X = self.X[cond,:]
+        #self.y = self.y[cond]
         
         #None
         #----
@@ -179,10 +221,26 @@ class Dataset:
                      in a copy of the original data (True) or be done in-place
                      (False).
         """
-        new_X = np.nan_to_num(self.X, copy, value)
-        new_y = np.nan_to_num(self.y, copy, value)
+        #new_X = np.nan_to_num(self.X, copy, value)
+        #new_y = np.nan_to_num(self.y, copy, value)
+        cond = self._find_nan(indiv = True)
+        if not (self.y is None):
+            cond_y = cond.iloc[:,-1]
+            cond = cond.iloc[:,0:-1]
+            
         if copy:
-            return new_X, new_y
+            new_X = self.X.copy()
+            new_X[cond] = value
+            if not (self.y is None):
+                new_y = self.y.copy()
+                new_y[cond_y] = value
+                return new_X, new_y
+            else:
+                return new_X
+        else:
+            self.X[cond] = value
+            if not (self.y is None):
+                self.y[cond_y] = value
     
     
     
@@ -205,20 +263,18 @@ if __name__ == "__main__":
     print(temp.summary())
     
     
-    #With NAs
-    #X = np.array([[1,2,3,4],
-    #              [5,6,7,8],
-    #              [9,10,11,12],
-    #              [9,10,11,12]]) #4r, 4c
+    #With NAs (REMOVE)
+    temp = CSV.read_csv("C:/Users/rober/si/datasets/iris/iris_missing_data.csv", label = 4)
+    print(temp.shape())
+    X,y = temp.remove_nan()
+    print(X.shape, y.shape)
     
-    #y = np.array([10,
-    #              20,
-    #              30,
-    #              10]) #4r, 1c
-    #temp = Dataset(X,y)
-    #print(temp.remove_nan())
-    #print(temp.fill_nan(1000))
-    #print(temp.shape())
+    
+    #With NAs (FILL)
+    temp = CSV.read_csv("C:/Users/rober/si/datasets/iris/iris_missing_data.csv", label = 4)
+    X,y = temp.fill_nan(0)
+    print(X)
+    print(y)
     
     
     
