@@ -21,22 +21,39 @@ def read_csv(filename:str, sep:str = ",", features:bool = True, label:Union[None
     :param features: Boolean indicating if the feature names are present or not in the file
                      (It is assumed that feature names are present in the first column of the file).
     :param label: The index of the column to be used as the dependent variable (y). Has the value "None" if this is not the case.
+                  TIP: Use -1 to select last column.
     """
     if features:
         row = 0
     else:
         row = None
-    data = pd.read_csv(filename, sep = sep, header = row)
-    feat = data.columns
     
+    data = pd.read_csv(filename, sep = sep, header = row)
+    
+    #Get columns names:
+    y_title = False
+    feat = None
+    
+    if label:
+        if features:
+            feat = [elem for ix,elem in enumerate(data.columns) if ix != label]
+            y_title = data.columns[label]
+    else:
+        if features:
+            feat = list(data.columns)          
+        
+    print(feat)
+    
+    
+    #Seperate data (X and y variables) if needed:
     data = data.to_numpy()
-    if label == None:
+    if not label:
         y = None
     else:
         y = data[:,label]
         data = np.delete(data, label, axis=1)
         
-    return Dataset(data, y, feat, label)
+    return Dataset(data, y, feat, y_title)
 
 
 def write_csv(filename:str, dataset:object, sep:str = ",", features:bool = True, label:bool = False):
@@ -73,7 +90,7 @@ def write_csv(filename:str, dataset:object, sep:str = ",", features:bool = True,
 
 if __name__ == "__main__":
     data = read_csv("C:/Users/rober/si/datasets/iris/iris.csv", label = 4)
-    print(data)
+    print(data.features)
     write_csv("TEMPORARIO.csv", data, features=True)
     
     data = read_csv("C:/Users/rober/si/datasets/iris/iris.csv", features=False, label = 4)

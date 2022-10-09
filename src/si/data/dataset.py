@@ -12,13 +12,15 @@ sys.path.append("C:/Users/rober/si/src/si/io")
 import numpy as np
 import pandas as pd
 from typing import Union
-import CSV
 #from data_file import read_data_file
 
 
 class Dataset:
+    """
+    Creates a dataset and gives data distribution information. 
+    """
     
-    def __init__(self, X:np.ndarray, y:np.ndarray=None, features:Union[None,list]=None, label:bool=None):
+    def __init__(self, X:np.ndarray, y:np.ndarray=None, features:Union[None,list]=None, label:Union[None,str]=None):
         """
         Stores the input values.
         
@@ -41,7 +43,9 @@ class Dataset:
             result += str(elem)[1:-1].replace(" ","\t") + "\n"
         
         if not (self.y is None):
-            result += "\ny:\n--\n" + str(self.y)[1:-1].replace(" ","\t")
+            result += "\ny:\n--\n"
+            for elem in self.y:
+                result += str(elem) + "\n"
         
         return result
     
@@ -76,13 +80,13 @@ class Dataset:
         """
         if self.y is None:
             return None
-        return np.unique(self.y, axis=0)
+        return np.unique(list(self.y), axis=0)
     
     
     
     def get_mean(self) -> np.ndarray:
         """
-        Returns the mean value of each observation.
+        Returns the mean value of each variable.
         """
         return np.mean(self.X, axis=0)
     
@@ -90,7 +94,7 @@ class Dataset:
     
     def get_var(self) -> np.ndarray:
         """
-        Returns the variance of each observation.
+        Returns the variance of each variable.
         """
         return np.var(self.X, axis=0)
     
@@ -98,7 +102,7 @@ class Dataset:
     
     def get_median(self) -> np.ndarray:
         """
-        Returns the median of each observation.
+        Returns the median of each variable.
         """
         return np.median(self.X, axis=0)
     
@@ -106,7 +110,7 @@ class Dataset:
     
     def get_min(self) -> np.ndarray:
         """
-        Returns the minimum value of each observation.
+        Returns the minimum value of each variable.
         """
         return np.min(self.X, axis=0)
 
@@ -114,7 +118,7 @@ class Dataset:
 
     def get_max(self) -> np.ndarray:
         """
-        Returns the maximum value of each observation.
+        Returns the maximum value of each variable.
         """
         return np.max(self.X, axis=0)
 
@@ -123,7 +127,7 @@ class Dataset:
     def summary(self) -> pd.DataFrame:
         """
         Returns a dataframe containing the mean, median, variance,
-        minimum and maximum value of each observation.
+        minimum and maximum value of each variable.
         """
         return pd.DataFrame(
             {"mean": self.get_mean(),
@@ -135,7 +139,7 @@ class Dataset:
     
     
     
-    def _find_nan(self, indiv:bool=True):
+    def _find_nan(self, indiv:bool=True) -> list:
         """
         Returns a list of boolean values relative to the positions of missing values.
         
@@ -184,28 +188,6 @@ class Dataset:
                 return new_X
             else:
                 self.X = new_X
-            
-            #cond2 = ~pd.isnull(self.y)
-            #cond = ~pd.isnull([cond,cond2]).any(axis=0)
-
-        #self.X = self.X[cond,:]
-        #self.y = self.y[cond]
-        
-        #None
-        #----
-#       print(self.X)
-#       cond = (self.X==None).any(axis=1)
-#       if not (self.y is None):
-#           cond2 = self.y==None
-#           cond = np.any([cond,cond2], axis=0)
-#           print(cond)
-#       new_X = np.delete(self.X, (self.X==None).any(axis=1), axis=0)
-#       new_y = np.delete(self.y, (self.X==None).any(axis=1), axis=0)
-#       if copy:
-#           return new_X, new_y
-#       else:
-#           self.X = new_X
-#           self.y = new_y
         
         
     
@@ -221,8 +203,6 @@ class Dataset:
                      in a copy of the original data (True) or be done in-place
                      (False).
         """
-        #new_X = np.nan_to_num(self.X, copy, value)
-        #new_y = np.nan_to_num(self.y, copy, value)
         cond = self._find_nan(indiv = True)
         if not (self.y is None):
             cond_y = cond.iloc[:,-1]
@@ -246,6 +226,9 @@ class Dataset:
     
 
 if __name__ == "__main__":
+    
+    import CSV
+    
     X = np.array([[1,2,3,4],
                   [5,6,7,8],
                   [9,10,11,12],
@@ -261,7 +244,7 @@ if __name__ == "__main__":
     print(temp.has_label())
     print(temp.get_classes())
     print(temp.summary())
-    
+    print(temp.get_var())
     
     #With NAs (REMOVE)
     temp = CSV.read_csv("C:/Users/rober/si/datasets/iris/iris_missing_data.csv", label = 4)
