@@ -1,10 +1,10 @@
-import sys
-sys.path.append("C:/Users/rober/si/src/si/data")
+#import sys
+#sys.path.append("C:/Users/rober/si/src/si/data")
 
 import numpy as np
 import pandas as pd
 from typing import Union
-from dataset import Dataset
+from si.data.dataset import Dataset
 
 def read_data_file(filename, sep:str = ",", label:Union[None,int] = None):
     """

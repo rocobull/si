@@ -2,7 +2,7 @@
 """
 Created on Mon Oct  3 12:17:42 2022
 
-@author: rober
+@author: Roberto
 """
 from scipy import stats
 
@@ -22,10 +22,10 @@ def f_classification(dataset:object) -> tuple:
 
 
 if __name__ == "__main__":
-    import sys
-    sys.path.append("C:/Users/rober/si/src/si/data")
+    #import sys
+    #sys.path.append("C:/Users/rober/si/src/si/data")
     
-    from dataset import Dataset
+    from si.data.dataset import Dataset
     import numpy as np
     
     dataset = Dataset(np.array([[0, 2, 0, 3],

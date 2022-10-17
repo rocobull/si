@@ -5,10 +5,10 @@ Created on Wed Oct  5 10:18:33 2022
 @author: rober
 """
 
-import sys
-sys.path.append("C:/Users/rober/si/src/si/data")
+#import sys
+#sys.path.append("C:/Users/rober/si/src/si/data")
     
-from dataset import Dataset
+from si.data.dataset import Dataset
 import numpy as np
 from typing import Callable
 
@@ -23,7 +23,7 @@ class SelectPercentile:
         """
         Stores the input values.
         
-        Paramaters
+        Parameters
         ----------
         :param score_func: f_classification() or f_regression() functions.
         :param percentile: Percentile value cut-off. Only F-scores above this
@@ -38,7 +38,7 @@ class SelectPercentile:
         """
         Stores the F-scores and respective p-values of each variable of the given dataset.
         
-        Paramaters
+        Parameters
         ----------
         :param dataset: An instance of the Dataset class.
         """
@@ -53,7 +53,7 @@ class SelectPercentile:
         F-scores. The new dataset will have only the variables with F-scores above
         the specified percentile value.
         
-        Paramaters
+        Parameters
         ----------
         :param dataset: An instance of the Dataset class.
         """
@@ -76,13 +76,9 @@ class SelectPercentile:
         Calls the fit() and transform() methods, returning the filtered version
         of the given Dataset instance.
         
-        Paramaters
+        Parameters
         ----------
         :param dataset: An instance of the Dataset class.
         """
         model = self.fit(dataset)
         return model.transform(dataset)
-    
-    
-    
-    

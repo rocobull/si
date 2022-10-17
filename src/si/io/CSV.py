@@ -1,11 +1,11 @@
 # ADD "data" folder to modules path to be imported
 
-import sys
-sys.path.append("C:/Users/rober/si/src/si/data")
+#import sys
+#sys.path.append("C:/Users/rober/si/src/si/data")
 
 import numpy as np
 import pandas as pd
-from dataset import Dataset
+from si.data.dataset import Dataset
 from typing import Union
 
 
@@ -40,9 +40,7 @@ def read_csv(filename:str, sep:str = ",", features:bool = True, label:Union[None
             y_title = data.columns[label]
     else:
         if features:
-            feat = list(data.columns)          
-        
-    print(feat)
+            feat = list(data.columns)
     
     
     #Seperate data (X and y variables) if needed:
