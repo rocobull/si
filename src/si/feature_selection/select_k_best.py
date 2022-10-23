@@ -4,10 +4,10 @@ Created on Mon Oct  3 12:29:45 2022
 
 @author: rober
 """
-#import sys
-#sys.path.append("C:/Users/rober/si/src/si/data")
+import sys
+sys.path.append("C:/Users/rober/si/src/si/data")
     
-from si.data.dataset import Dataset
+from dataset import Dataset
 import numpy as np
 from typing import Callable
 
@@ -20,7 +20,7 @@ class SelectKBest:
         """
         Stores the input values.
         
-        Parameters
+        Paramaters
         ----------
         :param score_func: f_classification() or f_regression() functions.
         :param k: Top 'k' variables to keep in the filtered dataset.
@@ -36,7 +36,7 @@ class SelectKBest:
         """
         Stores the F-scores and respective p-values of each variable of the given dataset.
         
-        Parameters
+        Paramaters
         ----------
         :param dataset: An instance of the Dataset class.
         """
@@ -51,7 +51,7 @@ class SelectKBest:
         F-scores. The new dataset will have only the top 'k' variables
         (with the largest F-scores).
         
-        Parameters
+        Paramaters
         ----------
         :param dataset: An instance of the Dataset class.
         """
@@ -66,7 +66,7 @@ class SelectKBest:
         Calls the fit() and transform() methods, returning the filtered version
         of the given Dataset instance.
         
-        Parameters
+        Paramaters
         ----------
         :param dataset: An instance of the Dataset class.
         """
@@ -80,8 +80,8 @@ class SelectKBest:
 
 if __name__=="__main__":
     
-    #sys.path.append("C:/Users/rober/si/src/si/statistics")
-    from si.statistics.f_classification import f_classification
+    sys.path.append("C:/Users/rober/si/src/si/statistics")
+    from f_classification import f_classification
     
     dataset = Dataset(np.array([[0, 2, 0, 3, 10, 4, 2],
                                 [1, 4, 2, 5, 19, 20, 0],

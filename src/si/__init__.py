@@ -5,6 +5,6 @@ __version__ = "0.0.1"
 __maintainer__ = "Roberto Bullitta"
 __email__ = "pg45474@alunos.uminho.pt"
 
-#
-# This package is heavily inspired by
-# 
+# -----------------------------------------------------------------------------------
+# This package is heavily inspired and adapted from https://github.com/vmspereira/si
+# -----------------------------------------------------------------------------------

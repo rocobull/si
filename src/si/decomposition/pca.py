@@ -1,5 +1,6 @@
 import numpy as np
-
+from si.data.dataset import Dataset
+from sklearn import preprocessing
 
 class PCA:
     """
@@ -18,7 +19,7 @@ class PCA:
 
 
 
-    def fit(self, dataset:object) -> tuple:
+    def fit(self, dataset:Dataset) -> tuple:
         """
         Stores the mean values of each sample, the first n
         principal components (specified by the user), and their respective explained variance.
@@ -27,11 +28,16 @@ class PCA:
         ----------
         :param dataset: An instance of the Dataset class.
         """
+        #if scale:
+        #    data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        #else:
+        #    data = dataset.X
+
         # Mean values of each sample
         self.mean_vals = np.mean(dataset.X, axis=0)
 
-        self.cent_data = np.subtract(dataset.X, self.mean_vals)
-        U, S, Vt = np.linalg.svd(self.cent_data, full_matrices=False)
+        cent_data = np.subtract(dataset.X, self.mean_vals)
+        U, S, Vt = np.linalg.svd(cent_data, full_matrices=False)
 
         #self.X = U * S * Vt
 
@@ -46,7 +52,7 @@ class PCA:
 
 
 
-    def transform(self, dataset: object) -> tuple:
+    def transform(self, dataset:Dataset) -> tuple:
         """
         Returns the calculated reduced SVD.
 
@@ -54,8 +60,9 @@ class PCA:
         ----------
         :param dataset: An instance of the Dataset class.
         """
+        cent_data = np.subtract(dataset.X, self.mean_vals)
         V = self.principal_comp.T
-        # SVD reduced
-        X_red = np.dot(self.cent_data, V)
 
+        # SVD reduced
+        X_red = np.dot(cent_data, V)
         return X_red

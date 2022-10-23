@@ -24,7 +24,7 @@ class Dataset:
         """
         Stores the input values.
         
-        Parameters
+        Paramaters
         ----------
         :param X: An independent variable matrix (should be a numpy.ndarray instance).
         :param X: The dependent variable vector (should be a numpy.ndarray instance).
@@ -143,7 +143,7 @@ class Dataset:
         """
         Returns a list of boolean values relative to the positions of missing values.
         
-        Parameters
+        Paramaters
         ----------
         :param indiv: Boolean indicating if the list should contain boolean values
                       for each individual position ('True' if missing value was found),
@@ -165,14 +165,12 @@ class Dataset:
         Removes all rows containing missing values in either the dependent or
         independent variables.
         
-        Parameters
+        Paramaters
         ----------
         :param copy: Boolean indicating whether the changes should be made
                      in a copy of the original data (True) or be done in-place
                      (False).
         """
-        #NaN
-        #---      
         cond = self._find_nan(False)
         new_X = self.X[cond,:]
         
@@ -196,7 +194,7 @@ class Dataset:
         """
         Replaces missing values with the value of the user's choice.
         
-        Parameters
+        Paramaters
         ----------
         :param value: The value used to replace the missing values
         :param copy: Boolean indicating whether the changes should be made
@@ -227,7 +225,7 @@ class Dataset:
 
 if __name__ == "__main__":
     
-    import CSV
+    import si.io.CSV as CSV
     
     X = np.array([[1,2,3,4],
                   [5,6,7,8],
