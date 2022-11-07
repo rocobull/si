@@ -29,7 +29,7 @@ class KNNRegressor:
 
         Parameters
         ----------
-        :param dataset: An instance of the Dataset class.
+        :param dataset: An instance of the Dataset class to train the model.
         """
         self.dataset = dataset  # Training dataset
         return self
@@ -57,7 +57,7 @@ class KNNRegressor:
 
         Parameters
         ----------
-        :param dataset: An instance of the Dataset class.
+        :param dataset: An instance of the Dataset class to predict the dependent variable.
         """
         return np.apply_along_axis(self._get_closest_sample, axis=1, arr=dataset.X)
 
@@ -69,7 +69,7 @@ class KNNRegressor:
 
         Parameters
         ----------
-        :param dataset: An instance of the Dataset class.
+        :param dataset: An instance of the Dataset class to predict the dependent variable.
         """
         return rmse(dataset.y, self.predict(dataset))
 

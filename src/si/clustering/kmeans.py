@@ -16,7 +16,7 @@ class KMeans:
         Parameters
         ----------
         :param k: Number of clusters to create
-        :param max_iter: Maximum number of iterations ti perform while calculating the centroids of each cluster
+        :param max_iter: Maximum number of iterations to perform while calculating the centroids of each cluster
         :param distance: A function to determine distance between observations and the clusters.
                          The "euclidean_distance" function is used by default
         """
