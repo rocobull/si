@@ -28,7 +28,7 @@ class Dataset:
         ----------
         :param X: An independent variable matrix (should be a numpy.ndarray instance).
         :param X: The dependent variable vector (should be a numpy.ndarray instance).
-        :param features: A vector constaining the names of each independent variable.
+        :param features: A vector containing the names of each independent variable.
         :param label: The name of the dependent variable.
         """
         self.X = X

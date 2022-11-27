@@ -7,7 +7,7 @@ from si.statistics.sigmoid_function import sigmoid_function
 
 class LogisticRegression:
     """
-    The LogisticRegression is a linear model using the L2 regularization.
+    A linear regression model using the L2 regularization.
     This model solves the logistic regression problem using an adapted Gradient Descent technique
 
     Parameters
@@ -45,7 +45,7 @@ class LogisticRegression:
         self.theta_zero = None
         self.cost_history = {}
 
-    def fit(self, dataset: Dataset, use_adaptive_fit: bool = False) -> 'RidgeRegression':
+    def fit(self, dataset: Dataset, use_adaptive_fit: bool = False) -> 'LogisticRegression':
         """
         Fit the model to the dataset
 
@@ -62,6 +62,7 @@ class LogisticRegression:
         self.theta_zero = 0
 
         # gradient descent
+        print(self.max_iter)
         for i in range(self.max_iter):
             # predicted y
             y_pred = sigmoid_function(np.dot(dataset.X, self.theta) + self.theta_zero)
