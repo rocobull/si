@@ -11,3 +11,11 @@ def rmse(y_true:np.array, y_pred:np.array):
     """
     N = len(y_true)
     return np.sqrt(np.sum(np.subtract(y_true, y_pred)**2 / N))
+
+
+
+
+if __name__ == "__main__":
+    true = np.array([0, 1, 1, 1, 0, 1])
+    pred = np.array([1, 0, 1, 1, 0, 1])
+    print(f"RMSE: {rmse(true, pred):.4f}")

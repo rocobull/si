@@ -3,6 +3,7 @@ from si.statistics.euclidean_distance import euclidean_distance
 from si.metrics.rmse import rmse
 from si.data.dataset import Dataset
 import numpy as np
+from sklearn import preprocessing
 
 class KNNRegressor:
     """
@@ -51,25 +52,32 @@ class KNNRegressor:
 
 
 
-    def predict(self, dataset: Dataset):
+    def predict(self, dataset: Dataset, scale:bool = True):
         """
         Assigns each sample in the given test dataset the mean value of their nearest neighbours.
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
+
         return np.apply_along_axis(self._get_closest_sample, axis=1, arr=dataset.X)
 
 
 
-    def score(self, dataset: Dataset):
+    def score(self, dataset: Dataset, scale:bool = True):
         """
         Gives an accuracy value between true dependent variable values and predicted values.
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        return rmse(dataset.y, self.predict(dataset))
+        return rmse(dataset.y, self.predict(dataset, scale))
 

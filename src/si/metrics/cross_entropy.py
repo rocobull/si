@@ -1,24 +1,24 @@
 import numpy as np
 
-def mse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+def cross_entropy(y_true, y_pred):
     """
-    The mean squared error metric for a given model.
+    The cross entropy error metric for a given model.
 
     Parameters
     ----------
     :param y_true: The true values of the dependent variable
     :param y_true: The predicted values of the dependent variable
     """
-    return np.sum((y_true - y_pred) ** 2) / (len(y_true) * 2)
+    return -np.sum(y_true*np.log(y_pred))/len(y_true)
 
 
-def mse_derivative(y_true: np.ndarray, y_pred: np.ndarray):
+def cross_entropy_derivative(y_true, y_pred):
     """
-    The derivative of the mean squared error metric equation for a given model.
+    The derivative of the cross entropy error metric equation for a given model.
 
     Parameters
     ----------
     :param y_true: The true values of the dependent variable
     :param y_true: The predicted values of the dependent variable
     """
-    return -(y_true - y_pred) / len(y_true)
+    return -y_true / (len(y_true)*y_pred)

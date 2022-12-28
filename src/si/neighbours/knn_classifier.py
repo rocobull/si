@@ -3,6 +3,7 @@ from si.statistics.euclidean_distance import euclidean_distance
 from si.metrics.accuracy import accuracy
 from si.data.dataset import Dataset
 import numpy as np
+from sklearn import preprocessing
 
 class KNNClassifier:
     """
@@ -53,25 +54,32 @@ class KNNClassifier:
 
 
 
-    def predict(self, dataset:Dataset):
+    def predict(self, dataset:Dataset, scale:bool = True):
         """
         Assigns a group to each sample in the given test dataset based on their nearest neighbours.
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        return np.apply_along_axis(self._get_closest_sample, axis=1, arr=dataset.X)
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
+
+        return np.apply_along_axis(self._get_closest_sample, axis=1, arr=data)
 
 
 
-    def score(self, dataset:Dataset):
+    def score(self, dataset:Dataset, scale:bool = True):
         """
         Gives an accuracy value between true dependent variable values and predicted values.
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        return accuracy(dataset.y, self.predict(dataset))
+        return accuracy(dataset.y, self.predict(dataset, scale))
 
