@@ -10,7 +10,7 @@ from typing import Union
 
 
 
-def read_csv(filename:str, sep:str = ",", features:bool = True, label:Union[None,int] = None) -> object:
+def read_csv(filename:str, sep:str = ",", features:bool = True, label:Union[None,int] = -1) -> object:
     """
     Reads a csv file containing a dataframe and returns a Dataset object.
     

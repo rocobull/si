@@ -50,6 +50,7 @@ class KMeans:
             data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
         else:
             data = dataset.X
+
         seeds = np.random.permutation(data.shape[0])[:self.k]
         self.centroids = data[seeds, :]
 

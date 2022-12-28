@@ -43,9 +43,7 @@ class Dataset:
             result += str(elem)[1:-1].replace(" ","\t") + "\n"
         
         if not (self.y is None):
-            result += "\ny:\n--\n"
-            for elem in self.y:
-                result += str(elem) + "\n"
+            result += f"\ny:\n--\n{self.y}"
         
         return result
     

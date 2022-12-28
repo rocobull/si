@@ -51,9 +51,10 @@ class KMer:
         """
         seq_kmers = set(re.findall(fr"(?=({'.' * self.k}))", seq))
         kmer_freq = {kmer: 0 for kmer in self.kmers}
+        seq_length_k = len(seq) - self.k + 1 #Number of total K-mers in the sequence
+
         for kmer in seq_kmers:
             kmer_num = len(re.findall(fr"(?=({kmer}))", seq)) #Number of a specific K-mer in the sequence
-            seq_length_k = len(seq) - self.k + 1              #Number of total K-mers in the sequence
             kmer_freq[kmer] = kmer_num / seq_length_k         #Frequency of a specific K-mer
 
         return kmer_freq
@@ -68,9 +69,8 @@ class KMer:
         :param dataset: An instance of the Dataset class containing sequences
         """
         result_freqs = {kmer:[] for kmer in self.kmers}
-        ix = 1
         for seq in dataset.X:
-            kmer_freq = self._get_seq_kmers(seq)
+            kmer_freq = self._get_seq_kmers(*seq)
             result_freqs = {k: [*result_freqs[k], kmer_freq[k]] for k in kmer_freq.keys()}
 
         x = np.array(list(result_freqs.values())).T

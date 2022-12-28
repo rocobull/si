@@ -19,7 +19,7 @@ class PCA:
 
 
 
-    def fit(self, dataset:Dataset) -> tuple:
+    def fit(self, dataset:Dataset, scale:bool = True):
         """
         Stores the mean values of each sample, the first n
         principal components (specified by the user), and their respective explained variance.
@@ -27,19 +27,18 @@ class PCA:
         Parameters
         ----------
         :param dataset: An instance of the Dataset class.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        #if scale:
-        #    data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
-        #else:
-        #    data = dataset.X
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
 
         # Mean values of each sample
-        self.mean_vals = np.mean(dataset.X, axis=0)
+        self.mean_vals = np.mean(data, axis=0)
 
-        cent_data = np.subtract(dataset.X, self.mean_vals)
+        cent_data = np.subtract(data, self.mean_vals)
         U, S, Vt = np.linalg.svd(cent_data, full_matrices=False)
-
-        #self.X = U * S * Vt
 
         # Principal components
         self.principal_comp = Vt[:self.n_components]
@@ -52,15 +51,21 @@ class PCA:
 
 
 
-    def transform(self, dataset:Dataset) -> tuple:
+    def transform(self, dataset:Dataset, scale:bool = True) -> np.array:
         """
         Returns the calculated reduced SVD.
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        cent_data = np.subtract(dataset.X, self.mean_vals)
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
+
+        cent_data = np.subtract(data, self.mean_vals)
         V = self.principal_comp.T
 
         # SVD reduced

@@ -4,6 +4,7 @@ import numpy as np
 from si.data.dataset import Dataset
 from si.metrics.accuracy import accuracy
 from si.statistics.sigmoid_function import sigmoid_function
+from sklearn import preprocessing
 
 class LogisticRegression:
     """
@@ -45,7 +46,7 @@ class LogisticRegression:
         self.theta_zero = None
         self.cost_history = {}
 
-    def fit(self, dataset: Dataset, use_adaptive_fit: bool = False) -> 'LogisticRegression':
+    def fit(self, dataset: Dataset, use_adaptive_fit: bool = False, scale:bool = True) -> 'LogisticRegression':
         """
         Fit the model to the dataset
 
@@ -54,21 +55,25 @@ class LogisticRegression:
         :param dataset: An instance of the Dataset class to train the model.
         :param use_adaptive_fit: Boolean indicating whether the learning rate (alpha) should be altered
                                  as the cost value starts to stagnate.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        m, n = dataset.shape()[0]
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
 
+        m, n = dataset.shape()[0]
         # initialize the model parameters
         self.theta = np.zeros(n)
         self.theta_zero = 0
 
         # gradient descent
-        print(self.max_iter)
         for i in range(self.max_iter):
             # predicted y
-            y_pred = sigmoid_function(np.dot(dataset.X, self.theta) + self.theta_zero)
+            y_pred = sigmoid_function(np.dot(data, self.theta) + self.theta_zero)
 
             # computing and updating the gradient with the learning rate
-            gradient = (self.alpha * (1 / m)) * np.dot(y_pred - dataset.y, dataset.X)
+            gradient = (self.alpha * (1 / m)) * np.dot(y_pred - dataset.y, data)
 
             # computing the penalty
             penalization_term = self.alpha * (self.l2_penalty / m) * self.theta
@@ -92,42 +97,56 @@ class LogisticRegression:
 
 
 
-    def predict(self, dataset: Dataset) -> np.array:
+    def predict(self, dataset: Dataset, scale:bool = True) -> np.array:
         """
         Predict the output of the dataset
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        pred_vals = sigmoid_function(np.dot(dataset.X, self.theta) + self.theta_zero)
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
+
+        pred_vals = sigmoid_function(np.dot(data, self.theta) + self.theta_zero)
         mask = pred_vals >= 0.5
         pred_vals[mask] = 1
         pred_vals[~mask] = 0
         return pred_vals
 
-    def score(self, dataset: Dataset) -> float:
+
+    def score(self, dataset: Dataset, scale:bool = True) -> float:
         """
         Compute the Mean Square Error of the model on the dataset
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        y_pred = self.predict(dataset)
+        y_pred = self.predict(dataset, scale)
         return accuracy(dataset.y, y_pred)
 
 
 
-    def cost(self, dataset: Dataset) -> float:
+    def cost(self, dataset: Dataset, scale:bool = True) -> float:
         """
         Compute the cost function (J function) of the model on the dataset using regularization
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        pred_vals = sigmoid_function(np.dot(dataset.X, self.theta) + self.theta_zero)
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
+
+        pred_vals = sigmoid_function(np.dot(data, self.theta) + self.theta_zero)
         m, n = dataset.shape()[0]
         y = dataset.y
         regularization = self.l2_penalty/(2*m)*np.sum(self.theta**2)
@@ -139,6 +158,7 @@ class LogisticRegression:
         cond = np.log(1-pred_vals)
 
         return -1/m * np.sum(y*np.log(pred_vals) + (1-y)*cond) + regularization
+
 
 
 if __name__ == '__main__':

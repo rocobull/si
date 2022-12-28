@@ -2,7 +2,7 @@ import numpy as np
 
 from si.data.dataset import Dataset
 from si.metrics.mse import mse
-
+from sklearn import preprocessing
 
 class RidgeRegression:
     """
@@ -46,7 +46,7 @@ class RidgeRegression:
 
 
 
-    def fit(self, dataset: Dataset, use_adaptive_fit: bool = False) -> 'RidgeRegression':
+    def fit(self, dataset: Dataset, use_adaptive_fit: bool = False, scale:bool = True) -> 'RidgeRegression':
         """
         Fit the model to the dataset
 
@@ -55,9 +55,14 @@ class RidgeRegression:
         :param dataset: An instance of the Dataset class to train the model.
         :param use_adaptive_fit: Boolean indicating whether the learning rate (alpha) should be altered
                                  as the cost value starts to stagnate.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        m, n = dataset.shape()[0]
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
 
+        m, n = dataset.shape()[0]
         # initialize the model parameters
         self.theta = np.zeros(n)
         self.theta_zero = 0
@@ -65,10 +70,10 @@ class RidgeRegression:
         # gradient descent
         for i in range(self.max_iter):
             # predicted y
-            y_pred = np.dot(dataset.X, self.theta) + self.theta_zero
+            y_pred = np.dot(data, self.theta) + self.theta_zero
 
             # computing and updating the gradient with the learning rate
-            gradient = (self.alpha * (1 / m)) * np.dot(y_pred - dataset.y, dataset.X)
+            gradient = (self.alpha * (1 / m)) * np.dot(y_pred - dataset.y, data)
 
             # computing the penalty
             penalization_term = self.alpha * (self.l2_penalty / m) * self.theta
@@ -78,7 +83,7 @@ class RidgeRegression:
             self.theta_zero = self.theta_zero - (self.alpha * (1 / m)) * np.sum(y_pred - dataset.y)
 
             # calculating cost in each iteration
-            self.cost_history[i] = self.cost(dataset)
+            self.cost_history[i] = self.cost(dataset, scale)
 
             # stopping criteria (version 1)
             if i > 0:
@@ -92,37 +97,48 @@ class RidgeRegression:
 
 
 
-    def predict(self, dataset: Dataset) -> np.array:
+    def predict(self, dataset: Dataset, scale:bool = True) -> np.array:
         """
         Predict the output of the dataset
 
         Parameters
         ----------
         :param dataset: An instance of the Dataset class to predict the dependent variable.
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        return np.dot(dataset.X, self.theta) + self.theta_zero
+        if scale:
+            data = preprocessing.scale(dataset.X, axis=0)  # Scale each feature
+        else:
+            data = dataset.X
 
-    def score(self, dataset: Dataset) -> float:
+        return np.dot(data, self.theta) + self.theta_zero
+
+
+    def score(self, dataset: Dataset, scale:bool = True) -> float:
         """
         Compute the Mean Square Error of the model on the dataset
 
         Parameters
         ----------
         :param dataset: The dataset to compute the MSE on
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        y_pred = self.predict(dataset)
+        y_pred = self.predict(dataset, scale)
         return mse(dataset.y, y_pred)
 
-    def cost(self, dataset: Dataset) -> float:
+
+    def cost(self, dataset: Dataset, scale:bool = True) -> float:
         """
         Compute the cost function (J function) of the model on the dataset using L2 regularization
 
         Parameters
         ----------
         :param dataset: The dataset to compute the cost function on
+        :param scale: Boolean indicating whether the data should be scaled (True) or not (False).
         """
-        y_pred = self.predict(dataset)
+        y_pred = self.predict(dataset, scale)
         return (np.sum((y_pred - dataset.y) ** 2) + (self.l2_penalty * np.sum(self.theta ** 2))) / (2 * len(dataset.y))
+
 
 
 if __name__ == '__main__':
